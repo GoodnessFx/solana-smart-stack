@@ -49,11 +49,23 @@ import { EventEmitter } from 'events';
  getLastSlot(): number { 
  return this.lastSlot; 
  } 
- disconnect(): void { 
- if (this.slotInterval) { 
- clearInterval(this.slotInterval); 
- } 
- this.connected = false; 
- logger.info('Yellowstone disconnected'); 
- } 
- } 
+  disconnect(): void {
+    if (this.slotInterval) {
+      clearInterval(this.slotInterval);
+    }
+    this.connected = false;
+    logger.info('Yellowstone disconnected');
+  }
+
+  /**
+   * Returns current health status of the Yellowstone service.
+   * Provides connection state, last known slot, and recent reconnection attempts.
+   */
+  getHealth(): { connected: boolean; lastSlot: number; reconnectAttempts: number } {
+    return {
+      connected: this.connected,
+      lastSlot: this.lastSlot,
+      reconnectAttempts: this.reconnectAttempts,
+    };
+  } 
+ }
