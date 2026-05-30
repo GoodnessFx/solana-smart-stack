@@ -1,0 +1,25 @@
+#!/bin/bash
+set -e
+
+# Filter staged files to scan only actual source code files
+# Exclude lock files, markdown documents, .env templates, and this pre-commit hook file itself
+files=$(git diff --cached --name-only | grep -E -v "(\.env\.example|package-lock\.json|\.md|\.githooks/pre-commit)")
+
+if [ -n "$files" ]; then
+  if git diff --cached -- $files | grep -E "(PRIVATE_KEY|sk-ant-|http.*rpc)"; then
+    echo "ERROR: Potential secret in commit in one of these files: $files"
+    exit 1
+  fi
+fi
+
+if git diff --cached --name-only | grep -E "\.env($|\.|\.)" | grep -v "\.env\.example"; then
+  echo "ERROR: Cannot commit .env file"
+  exit 1
+fi
+
+if git diff --cached --name-only | grep "node_modules"; then
+  echo "ERROR: Cannot commit node_modules"
+  exit 1
+fi
+
+exit 0
