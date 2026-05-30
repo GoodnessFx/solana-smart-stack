@@ -1,6 +1,14 @@
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import { logger } from '../logger';
+import helmet from '@fastify/helmet';
+import fastifyRateLimit from '@fastify/rate-limit';
+import { errorHandler, AppError } from '../middleware/errorHandler';
+import { registerRateLimiter } from '../middleware/rateLimiter';
+import { withCache } from '../middleware/cache';
+import { getMetrics } from '../metrics/collector';
+import CircuitBreaker from 'opossum';
+
 
 export async function setupServer(port: number, routes: any) {
   const server = fastify({
